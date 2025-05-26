@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FUTURA - Find Your Dream Home</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-content">
+            <div class="loading-logo">FUTURA</div>
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Discovering your perfect home...</div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-text">FUTURA</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#home" class="nav-link active" data-page="home">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#about" class="nav-link" data-page="about">
+                        <i class="fas fa-info-circle"></i>
+                        <span>About</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#properties" class="nav-link" data-page="properties">
+                        <i class="fas fa-building"></i>
+                        <span>Properties</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#contact" class="nav-link" data-page="contact">
+                        <i class="fas fa-envelope"></i>
+                        <span>Contact</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#help" class="nav-link" data-page="help">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Help</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Home Page -->
+        <section id="home" class="page active">
+            <div class="hero-section">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <!-- <div class="hero-badge">
+                            <i class="fas fa-star"></i>
+                            <span>World's First 3D Property Explorer</span>
+                        </div> -->
+                        <h1 class="hero-title">Find your<br><span class="highlight">dream home</span><br>anywhere on Earth</h1>
+                        <p class="hero-subtitle">Experience the future of real estate with our revolutionary 3D globe interface. Explore premium properties across continents and discover your perfect home with unprecedented ease.</p>
+                        
+                        <!-- <div class="hero-stats">
+                            <div class="stat">
+                                <div class="stat-number">2.5M+</div>
+                                <div class="stat-label">Properties Listed</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">195</div>
+                                <div class="stat-label">Countries Covered</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">50K+</div>
+                                <div class="stat-label">Happy Clients</div>
+                            </div>
+                        </div> -->
+                        
+                        <div class="hero-actions">
+                            <button class="cta-button primary">
+                                <span>EXPLORE PROPERTIES</span>
+                                <i class="fas fa-rocket"></i>
+                            </button>
+                            <!-- <button class="cta-button secondary">
+                                <i class="fas fa-play"></i>
+                                <span>Watch Demo</span>
+                            </button> -->
+                        </div>
+                        
+                        <div class="hero-features">
+                            <div class="feature">
+                                <i class="fas fa-globe-americas"></i>
+                                <span>Global Coverage</span>
+                            </div>
+                            <div class="feature">
+                                <i class="fas fa-eye"></i>
+                                <span>Virtual Tours</span>
+                            </div>
+                            <div class="feature">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Market Analytics</span>
+                            </div>
+                            <div class="feature">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Verified Listings</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="globe-container">
+                    <canvas id="globe-canvas"></canvas>
+                    <div class="globe-ui">
+                        <div class="globe-controls">
+                            <button class="globe-control" id="rotate-toggle" title="Toggle Rotation">
+                                <i class="fas fa-pause"></i>
+                            </button>
+                            <button class="globe-control" id="reset-view" title="Reset View">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Property Tooltip -->
+            <div id="property-tooltip" class="property-tooltip">
+                <div class="tooltip-image">
+                    <img src="" alt="">
+                    <div class="tooltip-price"></div>
+                </div>
+                <div class="tooltip-content">
+                    <h4 class="tooltip-title"></h4>
+                    <p class="tooltip-location"></p>
+                    <div class="tooltip-specs">
+                        <span class="spec"><i class="fas fa-bed"></i> <span class="beds"></span></span>
+                        <span class="spec"><i class="fas fa-bath"></i> <span class="baths"></span></span>
+                        <span class="spec"><i class="fas fa-ruler-combined"></i> <span class="sqft"></span></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Page -->
+        <section id="about" class="page">
+            <div class="page-container">
+                <div class="page-header">
+                    <h1 class="page-title">About FUTURA</h1>
+                    <p class="page-subtitle">Pioneering the future of real estate discovery</p>
+                </div>
+                <div class="about-content">
+                    <div class="about-grid">
+                        <div class="about-card">
+                            <div class="card-icon">
+                                <i class="fas fa-globe-americas"></i>
+                            </div>
+                            <h3>Global Reach</h3>
+                            <p>We connect you with exceptional properties worldwide through our innovative 3D globe interface, making global real estate exploration intuitive and engaging.</p>
+                        </div>
+                        <div class="about-card">
+                            <div class="card-icon">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <h3>Innovation First</h3>
+                            <p>Our cutting-edge technology transforms how you discover properties, combining immersive 3D visualization with comprehensive property data and insights.</p>
+                        </div>
+                        <div class="about-card">
+                            <div class="card-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h3>Expert Support</h3>
+                            <p>Our team of real estate professionals provides personalized guidance throughout your property journey, ensuring you make informed decisions.</p>
+                        </div>
+                    </div>
+                    <div class="about-mission">
+                        <h2>Our Mission</h2>
+                        <p>At FUTURA, we believe that finding your perfect home should be an extraordinary experience. We leverage advanced technology and deep market expertise to revolutionize property discovery, making it more visual, interactive, and globally accessible than ever before.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Properties Page -->
+        <section id="properties" class="page">
+            <div class="page-container">
+                <div class="page-header">
+                    <h1 class="page-title">Properties</h1>
+                    <p class="page-subtitle">Discover your perfect home from our curated collection</p>
+                </div>
+                
+                <!-- Filters -->
+                <div class="filters-container">
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label>Location</label>
+                            <select id="location-filter">
+                                <option value="">All Locations</option>
+                                <option value="new-york">New York</option>
+                                <option value="london">London</option>
+                                <option value="tokyo">Tokyo</option>
+                                <option value="sydney">Sydney</option>
+                                <option value="dubai">Dubai</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Bedrooms</label>
+                            <select id="beds-filter">
+                                <option value="">Any</option>
+                                <option value="1">1+</option>
+                                <option value="2">2+</option>
+                                <option value="3">3+</option>
+                                <option value="4">4+</option>
+                                <option value="5">5+</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Bathrooms</label>
+                            <select id="baths-filter">
+                                <option value="">Any</option>
+                                <option value="1">1+</option>
+                                <option value="2">2+</option>
+                                <option value="3">3+</option>
+                                <option value="4">4+</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Price Range</label>
+                            <select id="price-filter">
+                                <option value="">Any Price</option>
+                                <option value="0-500000">Under $500K</option>
+                                <option value="500000-1000000">$500K - $1M</option>
+                                <option value="1000000-2000000">$1M - $2M</option>
+                                <option value="2000000-99999999">$2M+</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Area (sq ft)</label>
+                            <select id="area-filter">
+                                <option value="">Any Size</option>
+                                <option value="0-1000">Under 1,000</option>
+                                <option value="1000-2000">1,000 - 2,000</option>
+                                <option value="2000-3000">2,000 - 3,000</option>
+                                <option value="3000-99999">3,000+</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Sort By</label>
+                            <select id="sort-filter">
+                                <option value="newest">Newest</option>
+                                <option value="price-low">Price: Low to High</option>
+                                <option value="price-high">Price: High to Low</option>
+                                <option value="size">Size</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <button class="clear-filters">Clear All</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Properties Grid -->
+                <div class="properties-grid" id="properties-grid">
+                    <!-- Properties will be populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Page -->
+        <section id="contact" class="page">
+            <div class="page-container">
+                <div class="page-header">
+                    <h1 class="page-title">Contact Us</h1>
+                    <p class="page-subtitle">Get in touch with our real estate experts</p>
+                </div>
+                <div class="contact-content">
+                    <div class="contact-grid">
+                        <div class="contact-info">
+                            <div class="contact-card">
+                                <div class="contact-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <h3>Visit Us</h3>
+                                <p>123 Future Avenue<br>Innovation District<br>Tech City, TC 12345</p>
+                            </div>
+                            <div class="contact-card">
+                                <div class="contact-icon">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <h3>Call Us</h3>
+                                <p>+1 (555) 123-FUTURE<br>Mon-Fri 9AM-6PM</p>
+                            </div>
+                            <div class="contact-card">
+                                <div class="contact-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <h3>Email Us</h3>
+                                <p>hello@futura.com<br>support@futura.com</p>
+                            </div>
+                        </div>
+                        <div class="contact-form">
+                            <form id="contact-form">
+                                <div class="form-group">
+                                    <label for="name">Full Name</label>
+                                    <input type="text" id="name" name="name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email Address</label>
+                                    <input type="email" id="email" name="email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Phone Number</label>
+                                    <input type="tel" id="phone" name="phone">
+                                </div>
+                                <div class="form-group">
+                                    <label for="interest">I'm Interested In</label>
+                                    <select id="interest" name="interest">
+                                        <option value="buying">Buying a Property</option>
+                                        <option value="selling">Selling a Property</option>
+                                        <option value="renting">Renting</option>
+                                        <option value="investing">Investment Opportunities</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="message">Message</label>
+                                    <textarea id="message" name="message" rows="5" placeholder="Tell us about your property needs..."></textarea>
+                                </div>
+                                <button type="submit" class="submit-button">
+                                    <span>Send Message</span>
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Help Page -->
+        <section id="help" class="page">
+            <div class="page-container">
+                <div class="page-header">
+                    <h1 class="page-title">Help Center</h1>
+                    <p class="page-subtitle">Find answers to frequently asked questions</p>
+                </div>
+                <div class="help-content">
+                    <div class="help-categories">
+                        <div class="help-category">
+                            <h3><i class="fas fa-globe"></i> Using the 3D Globe</h3>
+                            <div class="help-items">
+                                <div class="help-item">
+                                    <h4>How do I navigate the 3D globe?</h4>
+                                    <p>Click and drag to rotate the globe, use mouse wheel to zoom in/out, and hover over property markers to see details.</p>
+                                </div>
+                                <div class="help-item">
+                                    <h4>What do the property markers represent?</h4>
+                                    <p>Each glowing marker represents a property listing. The color and size may indicate price range or property type.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="help-category">
+                            <h3><i class="fas fa-search"></i> Finding Properties</h3>
+                            <div class="help-items">
+                                <div class="help-item">
+                                    <h4>How do I filter properties?</h4>
+                                    <p>Use the filters on the Properties page to narrow down by location, price, bedrooms, bathrooms, and more.</p>
+                                </div>
+                                <div class="help-item">
+                                    <h4>Can I save favorite properties?</h4>
+                                    <p>Yes, click the heart icon on any property to save it to your favorites list for later viewing.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="help-category">
+                            <h3><i class="fas fa-phone"></i> Getting Support</h3>
+                            <div class="help-items">
+                                <div class="help-item">
+                                    <h4>How can I contact an agent?</h4>
+                                    <p>Use the contact form or call our support line. Our agents are available Monday-Friday 9AM-6PM.</p>
+                                </div>
+                                <div class="help-item">
+                                    <h4>Do you offer virtual tours?</h4>
+                                    <p>Yes, many of our properties offer 360° virtual tours and video walkthroughs.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Property Modal -->
+    <div id="property-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <div class="modal-header">
+                <div class="modal-images">
+                    <div class="main-image">
+                        <img id="modal-main-image" src="" alt="">
+                    </div>
+                    <div class="image-thumbnails" id="image-thumbnails">
+                        <!-- Thumbnails will be populated by JavaScript -->
+                    </div>
+                </div>
+                <div class="modal-info">
+                    <h2 id="modal-title"></h2>
+                    <p id="modal-location"></p>
+                    <div class="modal-price" id="modal-price"></div>
+                    <div class="modal-specs" id="modal-specs"></div>
+                </div>
+            </div>
+            <div class="modal-tabs">
+                <button class="tab-button active" data-tab="overview">Overview</button>
+                <button class="tab-button" data-tab="details">Details</button>
+                <button class="tab-button" data-tab="location">Location</button>
+                <button class="tab-button" data-tab="calculator">Calculator</button>
+            </div>
+            <div class="modal-body">
+                <div class="tab-content active" id="overview">
+                    <div class="overview-grid">
+                        <div class="highlights">
+                            <h3>Highlights</h3>
+                            <div id="modal-highlights"></div>
+                        </div>
+                        <div class="features">
+                            <h3>Features</h3>
+                            <div id="modal-features"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-content" id="details">
+                    <div class="details-grid">
+                        <div class="property-details">
+                            <h3>Property Details</h3>
+                            <div id="modal-description"></div>
+                        </div>
+                        <div class="nearby-places">
+                            <h3>Nearby</h3>
+                            <div id="modal-nearby"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-content" id="location">
+                    <div class="location-content">
+                        <div id="property-map"></div>
+                    </div>
+                </div>
+                <div class="tab-content" id="calculator">
+                    <div class="calculator-content">
+                        <h3>Monthly Payment Calculator</h3>
+                        <div class="calculator-form">
+                            <div class="calc-group">
+                                <label>Home Price</label>
+                                <input type="number" id="calc-price" readonly>
+                            </div>
+                            <div class="calc-group">
+                                <label>Down Payment</label>
+                                <input type="number" id="calc-down" placeholder="Down payment amount">
+                            </div>
+                            <div class="calc-group">
+                                <label>Interest Rate (%)</label>
+                                <input type="number" id="calc-rate" value="4.5" step="0.1">
+                            </div>
+                            <div class="calc-group">
+                                <label>Loan Term (years)</label>
+                                <select id="calc-term">
+                                    <option value="15">15 years</option>
+                                    <option value="20">20 years</option>
+                                    <option value="25">25 years</option>
+                                    <option value="30" selected>30 years</option>
+                                </select>
+                            </div>
+                            <button class="calc-button" onclick="calculatePayment()">Calculate</button>
+                            <div class="calc-result" id="calc-result"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
